@@ -33,6 +33,36 @@
       <div id="person-list" class="flex flex-wrap gap-2 mt-3"></div>
     </section>
 
+    <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
+      <h2 class="text-lg font-semibold mb-3 text-slate-100">Currency Conversion</h2>
+      <div class="flex items-start gap-2">
+        <span class="text-slate-300 text-lg font-medium pt-1.5">1</span>
+        <div class="flex flex-col items-center">
+          <input id="currency-receipt" type="text" placeholder="SGD"
+            class="w-20 px-2 py-1.5 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded text-center focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <span class="text-xs italic text-slate-500 mt-0.5">Receipt</span>
+        </div>
+        <span class="text-slate-400 text-sm pt-2">=</span>
+        <div class="flex flex-col items-center">
+          <input id="currency-rate" type="number" min="0" step="0.01" placeholder="0.00"
+            class="w-24 px-2 py-1.5 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded text-center focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <span class="text-xs italic text-slate-500 mt-0.5">Rate</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <input id="currency-alt" type="text" placeholder="MYR"
+            class="w-20 px-2 py-1.5 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded text-center focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <span class="text-xs italic text-slate-500 mt-0.5">Alternate</span>
+        </div>
+        <button id="currency-swap" type="button" title="Swap currencies"
+          class="mt-1 p-1.5 rounded-lg text-slate-400 hover:text-indigo-300 hover:bg-slate-800 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m-4 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Disable until we are motivated enough to add Gemini AI
     <section id="fill-section" class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
       <h2 class="text-lg font-semibold mb-3 text-slate-100">Fill with Image</h2>
       <div id="fill-form" class="space-y-3">
@@ -57,6 +87,7 @@
         <p class="text-sm text-slate-400">Analyzing receipt with Gemini...</p>
       </div>
     </section>
+    -->
 
     <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
       <div class="flex items-center justify-between mb-3">
@@ -79,13 +110,13 @@
       <div class="grid grid-cols-2 gap-3">
         <label class="text-sm">
           <span class="text-slate-400">Service charge (%)</span>
-          <input id="service-input" type="number" min="0" step="0.01" value="0"
-            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input id="service-input" type="number" min="0" step="0.01" placeholder="0"
+            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </label>
         <label class="text-sm">
           <span class="text-slate-400">Tax (%)</span>
-          <input id="tax-input" type="number" min="0" step="0.01" value="0"
-            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input id="tax-input" type="number" min="0" step="0.01" placeholder="0"
+            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </label>
       </div>
       <p class="text-xs text-slate-500 mt-2">Tax is applied on top of subtotal + service charge. Each person pays a proportional share based on their items.</p>
@@ -94,13 +125,21 @@
     <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-semibold text-slate-100">Summary</h2>
-        <button
-          id="share-btn"
-          class="px-3 py-1.5 bg-slate-700 text-slate-100 rounded-lg hover:bg-slate-600 transition text-sm flex items-center gap-1.5"
-        >
-          <span>🔗</span>
-          <span id="share-btn-label">Copy shareable link</span>
-        </button>
+        <div class="flex items-center gap-4">
+          <div id="currency-toggle-wrapper" class="inline-flex rounded-lg overflow-hidden border border-slate-700">
+            <button id="toggle-btn-receipt" type="button"
+              class="px-3 py-1 text-xs font-medium bg-indigo-600 text-white transition">Receipt</button>
+            <button id="toggle-btn-alt" type="button"
+              class="px-3 py-1 text-xs font-medium bg-slate-800 text-slate-400 hover:text-slate-200 transition">Alternate</button>
+          </div>
+          <button
+            id="share-btn"
+            class="px-3 py-1.5 bg-slate-700 text-slate-100 rounded-lg hover:bg-slate-600 transition text-sm flex items-center gap-1.5"
+          >
+            <span>🔗</span>
+            <span id="share-btn-label">Copy shareable link</span>
+          </button>
+        </div>
       </div>
       <div id="summary" class="space-y-2"></div>
       <p id="empty-summary" class="text-center text-slate-500 py-6 text-sm">
@@ -118,6 +157,10 @@
       expanded: new Set(),
       nextPersonId: 1,
       nextItemId: 1,
+      receiptCurrency: '',
+      altCurrency: '',
+      conversionRate: 0,
+      showAlt: false,
     };
 
     const personListEl = document.getElementById('person-list');
@@ -138,6 +181,12 @@
     const fillKey = document.getElementById('fill-key');
     const fillSubmit = document.getElementById('fill-submit');
     const fillError = document.getElementById('fill-error');
+    const currencyReceiptInput = document.getElementById('currency-receipt');
+    const currencyAltInput = document.getElementById('currency-alt');
+    const currencyRateInput = document.getElementById('currency-rate');
+    const currencySwapBtn = document.getElementById('currency-swap');
+    const toggleBtnReceipt = document.getElementById('toggle-btn-receipt');
+    const toggleBtnAlt = document.getElementById('toggle-btn-alt');
 
     const addPerson = (name) => {
       const trimmed = name.trim();
@@ -242,7 +291,7 @@
             </label>
             <label class="text-sm">
               <span class="text-slate-400">Price</span>
-              <input type="number" min="0" step="0.01" value="${item.price}"
+              <input type="number" min="0" step="0.01" value="${item.price || ''}" placeholder="0.00"
                 class="w-full px-2 py-1 bg-slate-900 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 data-field="price" />
             </label>
@@ -254,7 +303,7 @@
             </div>
           </div>
           <div class="text-right text-sm text-slate-400">
-            Total: <span class="font-semibold text-emerald-400">$${(item.quantity * item.price).toFixed(2)}</span>
+            Total: <span class="font-semibold text-emerald-400">${formatReceiptPrice(item.quantity * item.price)}</span>
           </div>
         `;
 
@@ -289,7 +338,7 @@
       const item = state.items.find((i) => i.id === itemId);
       if (!item) return;
       const totalEl = card.querySelector('.text-right span');
-      if (totalEl) totalEl.textContent = `$${(item.quantity * item.price).toFixed(2)}`;
+      if (totalEl) totalEl.textContent = formatReceiptPrice(item.quantity * item.price);
     };
 
     const computeBreakdown = () => {
@@ -364,9 +413,9 @@
                 <div class="flex justify-between text-xs py-1">
                   <span class="text-slate-300">
                     ${escapeHtml(it.name)}
-                    <span class="text-slate-500">(${it.quantity} × $${it.price.toFixed(2)} ÷ ${it.sharerCount})</span>
+                    <span class="text-slate-500">(${it.quantity} × ${formatPrice(it.price)} ÷ ${it.sharerCount})</span>
                   </span>
-                  <span class="text-slate-200">$${it.share.toFixed(2)}</span>
+                  <span class="text-slate-200">${formatPrice(it.share)}</span>
                 </div>`
               )
               .join('')
@@ -378,7 +427,7 @@
               <span class="text-slate-400 text-xs transition-transform inline-block ${isOpen ? 'rotate-90' : ''}">▶</span>
               <span class="font-medium text-slate-200">${escapeHtml(person.name)}</span>
             </span>
-            <span class="text-lg font-semibold text-emerald-400">$${data.total.toFixed(2)}</span>
+            <span class="text-lg font-semibold text-emerald-400">${formatPrice(data.total)}</span>
           </button>
           <div class="${isOpen ? '' : 'hidden'} px-2 pb-3 space-y-2">
             <div class="bg-slate-800/40 rounded p-3 space-y-1">
@@ -386,19 +435,19 @@
               ${itemsHtml}
               <div class="flex justify-between text-xs pt-2 mt-1 border-t border-slate-700">
                 <span class="text-slate-400">Subtotal (before tax & service)</span>
-                <span class="text-slate-200 font-medium">$${data.subtotal.toFixed(2)}</span>
+                <span class="text-slate-200 font-medium">${formatPrice(data.subtotal)}</span>
               </div>
               <div class="flex justify-between text-xs">
                 <span class="text-slate-400">Service charge (${state.servicePct || 0}%)</span>
-                <span class="text-slate-200">+ $${data.service.toFixed(2)}</span>
+                <span class="text-slate-200">+ ${formatPrice(data.service)}</span>
               </div>
               <div class="flex justify-between text-xs">
                 <span class="text-slate-400">Tax (${state.taxPct || 0}%)</span>
-                <span class="text-slate-200">+ $${data.tax.toFixed(2)}</span>
+                <span class="text-slate-200">+ ${formatPrice(data.tax)}</span>
               </div>
               <div class="flex justify-between text-sm pt-2 mt-1 border-t border-slate-700">
                 <span class="text-slate-300 font-medium">Final total</span>
-                <span class="text-emerald-400 font-semibold">$${data.total.toFixed(2)}</span>
+                <span class="text-emerald-400 font-semibold">${formatPrice(data.total)}</span>
               </div>
             </div>
           </div>
@@ -415,6 +464,18 @@
 
         summaryEl.appendChild(row);
       });
+
+      const grandTotal = state.people.reduce((sum, person) => {
+        return sum + breakdown.get(person.id).total;
+      }, 0);
+
+      const totalRow = document.createElement('div');
+      totalRow.className = 'flex justify-between items-center pt-4 mt-2 border-t border-slate-700';
+      totalRow.innerHTML = `
+        <span class="text-base font-semibold text-slate-200">Total</span>
+        <span class="text-xl font-bold text-emerald-400">${formatPrice(grandTotal)}</span>
+      `;
+      summaryEl.appendChild(totalRow);
     };
 
     const render = () => {
@@ -430,6 +491,92 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+
+    const convertPrice = (amount) => {
+      if (!state.showAlt || !state.conversionRate) return amount;
+      return amount * state.conversionRate;
+    };
+
+    const getCurrencySymbol = () => {
+      if (state.showAlt && state.altCurrency) return state.altCurrency;
+      if (!state.showAlt && state.receiptCurrency) return state.receiptCurrency;
+      return '$';
+    };
+
+    const formatPrice = (amount) => {
+      const converted = convertPrice(amount);
+      const symbol = getCurrencySymbol();
+      if (symbol === '$' || symbol === '') return `$${converted.toFixed(2)}`;
+      return `${converted.toFixed(2)} ${symbol}`;
+    };
+
+    const formatReceiptPrice = (amount) => {
+      const symbol = state.receiptCurrency || '$';
+      if (symbol === '$') return `$${amount.toFixed(2)}`;
+      return `${amount.toFixed(2)} ${symbol}`;
+    };
+
+    const updateCurrencyLabels = () => {
+      const receipt = state.receiptCurrency || 'Receipt';
+      const alt = state.altCurrency || 'Alternate';
+      toggleBtnReceipt.textContent = receipt;
+      toggleBtnAlt.textContent = alt;
+
+      if (state.showAlt) {
+        toggleBtnReceipt.className = 'px-3 py-1 text-xs font-medium bg-slate-800 text-slate-400 hover:text-slate-200 transition';
+        toggleBtnAlt.className = 'px-3 py-1 text-xs font-medium bg-indigo-600 text-white transition';
+      } else {
+        toggleBtnReceipt.className = 'px-3 py-1 text-xs font-medium bg-indigo-600 text-white transition';
+        toggleBtnAlt.className = 'px-3 py-1 text-xs font-medium bg-slate-800 text-slate-400 hover:text-slate-200 transition';
+      }
+    };
+
+    currencyReceiptInput.addEventListener('input', (e) => {
+      state.receiptCurrency = e.target.value.trim();
+      updateCurrencyLabels();
+      render();
+    });
+
+    currencyAltInput.addEventListener('input', (e) => {
+      state.altCurrency = e.target.value.trim();
+      updateCurrencyLabels();
+      render();
+    });
+
+    currencyRateInput.addEventListener('input', (e) => {
+      state.conversionRate = Number(e.target.value) || 0;
+      render();
+    });
+
+    currencySwapBtn.addEventListener('click', () => {
+      const tempCurrency = state.receiptCurrency;
+      state.receiptCurrency = state.altCurrency;
+      state.altCurrency = tempCurrency;
+      currencyReceiptInput.value = state.receiptCurrency;
+      currencyAltInput.value = state.altCurrency;
+      if (state.conversionRate > 0) {
+        state.conversionRate = 1 / state.conversionRate;
+        currencyRateInput.value = state.conversionRate;
+      }
+      updateCurrencyLabels();
+      render();
+    });
+
+    toggleBtnReceipt.addEventListener('click', () => {
+      if (state.showAlt) {
+        state.showAlt = false;
+        updateCurrencyLabels();
+        render();
+      }
+    });
+
+    toggleBtnAlt.addEventListener('click', () => {
+      if (!state.showAlt) {
+        state.showAlt = true;
+        updateCurrencyLabels();
+        render();
+      }
+    });
 
     personForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -453,19 +600,25 @@
     const encodeState = () => {
       const personIndex = new Map(state.people.map((p, i) => [p.id, i]));
       const payload = {
-        v: 1,
+        v: 2,
         p: state.people.map((p) => p.name),
-        i: state.items.map((it) => ({
-          n: it.name,
-          q: it.quantity,
-          pr: it.price,
-          s: Array.from(it.sharers)
+        i: state.items.map((it) => {
+          const item = {};
+          if (it.name) item.n = it.name;
+          if (it.quantity !== 1) item.q = it.quantity;
+          if (it.price) item.r = it.price;
+          const sharers = Array.from(it.sharers)
             .map((id) => personIndex.get(id))
-            .filter((idx) => idx !== undefined),
-        })),
-        sc: state.servicePct,
-        tx: state.taxPct,
+            .filter((idx) => idx !== undefined);
+          if (sharers.length) item.s = sharers;
+          return item;
+        }),
       };
+      if (state.servicePct) payload.c = state.servicePct;
+      if (state.taxPct) payload.t = state.taxPct;
+      if (state.receiptCurrency) payload.rc = state.receiptCurrency;
+      if (state.altCurrency) payload.ac = state.altCurrency;
+      if (state.conversionRate) payload.cr = state.conversionRate;
       const json = JSON.stringify(payload);
       return btoa(unescape(encodeURIComponent(json)))
         .replace(/\+/g, '-')
@@ -478,18 +631,19 @@
         const padded = encoded.replace(/-/g, '+').replace(/_/g, '/');
         const json = decodeURIComponent(escape(atob(padded)));
         const data = JSON.parse(json);
-        if (!data || data.v !== 1) return false;
+        if (!data || (data.v !== 1 && data.v !== 2)) return false;
 
         state.people = (data.p || []).map((name) => ({
           id: state.nextPersonId++,
           name: String(name),
         }));
 
+        const isV2 = data.v === 2;
         state.items = (data.i || []).map((it) => ({
           id: state.nextItemId++,
           name: String(it.n || ''),
-          quantity: Number(it.q) || 0,
-          price: Number(it.pr) || 0,
+          quantity: it.q != null ? Number(it.q) : 1,
+          price: Number(isV2 ? it.r : it.pr) || 0,
           sharers: new Set(
             (it.s || [])
               .map((idx) => state.people[idx]?.id)
@@ -497,10 +651,17 @@
           ),
         }));
 
-        state.servicePct = Number(data.sc) || 0;
-        state.taxPct = Number(data.tx) || 0;
-        serviceInput.value = state.servicePct;
-        taxInput.value = state.taxPct;
+        state.servicePct = Number(isV2 ? data.c : data.sc) || 0;
+        state.taxPct = Number(isV2 ? data.t : data.tx) || 0;
+        serviceInput.value = state.servicePct || '';
+        taxInput.value = state.taxPct || '';
+
+        state.receiptCurrency = data.rc || '';
+        state.altCurrency = data.ac || '';
+        state.conversionRate = Number(data.cr) || 0;
+        currencyReceiptInput.value = state.receiptCurrency;
+        currencyAltInput.value = state.altCurrency;
+        currencyRateInput.value = state.conversionRate || '';
         return true;
       } catch (err) {
         console.error('Failed to decode shared bill:', err);
@@ -643,8 +804,8 @@ Rules:
 
       state.servicePct = Number(data.servicePct) || 0;
       state.taxPct = Number(data.taxPct) || 0;
-      serviceInput.value = state.servicePct;
-      taxInput.value = state.taxPct;
+      serviceInput.value = state.servicePct || '';
+      taxInput.value = state.taxPct || '';
 
       render();
     };
