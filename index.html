@@ -175,12 +175,12 @@
     const taxInput = document.getElementById('tax-input');
     const shareBtn = document.getElementById('share-btn');
     const shareBtnLabel = document.getElementById('share-btn-label');
-    const fillForm = document.getElementById('fill-form');
-    const fillLoading = document.getElementById('fill-loading');
-    const fillFile = document.getElementById('fill-file');
-    const fillKey = document.getElementById('fill-key');
-    const fillSubmit = document.getElementById('fill-submit');
-    const fillError = document.getElementById('fill-error');
+    // const fillForm = document.getElementById('fill-form');
+    // const fillLoading = document.getElementById('fill-loading');
+    // const fillFile = document.getElementById('fill-file');
+    // const fillKey = document.getElementById('fill-key');
+    // const fillSubmit = document.getElementById('fill-submit');
+    // const fillError = document.getElementById('fill-error');
     const currencyReceiptInput = document.getElementById('currency-receipt');
     const currencyAltInput = document.getElementById('currency-alt');
     const currencyRateInput = document.getElementById('currency-rate');
@@ -810,6 +810,7 @@ Rules:
       render();
     };
 
+    /*
     fillSubmit.addEventListener('click', async () => {
       fillError.classList.add('hidden');
       const file = fillFile.files?.[0];
@@ -834,6 +835,7 @@ Rules:
         showFillError(err.message || 'Something went wrong while processing the image.');
       }
     });
+    */
 
     const loadFromUrl = () => {
       const hash = window.location.hash.replace(/^#/, '');
