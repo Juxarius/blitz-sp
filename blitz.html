@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blitz - Bill Splitter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 min-h-screen text-slate-100">
+  <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    <header class="text-center">
+      <h1 class="text-3xl sm:text-4xl font-bold text-white">Blitz</h1>
+      <p class="text-sm text-slate-400">Split bills with friends, fast.</p>
+    </header>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
+      <h2 class="text-lg font-semibold mb-3 text-slate-100">People</h2>
+      <form id="person-form" class="flex gap-2">
+        <input
+          id="person-input"
+          type="text"
+          placeholder="Add a person's name and press Enter"
+          class="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          autocomplete="off"
+        />
+        <button
+          type="submit"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition"
+        >
+          Add
+        </button>
+      </form>
+      <div id="person-list" class="flex flex-wrap gap-2 mt-3"></div>
+    </section>
+
+    <section id="fill-section" class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
+      <h2 class="text-lg font-semibold mb-3 text-slate-100">Fill with Image</h2>
+      <div id="fill-form" class="space-y-3">
+        <label class="block text-sm">
+          <span class="text-slate-400">Receipt image</span>
+          <input id="fill-file" type="file" accept="image/*"
+            class="block w-full mt-1 text-sm text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-700 file:text-slate-100 hover:file:bg-slate-600 file:cursor-pointer" />
+        </label>
+        <label class="block text-sm">
+          <span class="text-slate-400">Google Gemini API key</span>
+          <input id="fill-key" type="password" placeholder="Your API key"
+            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </label>
+        <button id="fill-submit"
+          class="px-4 py-2 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-500 transition disabled:opacity-50 disabled:cursor-not-allowed">
+          Extract from image
+        </button>
+        <p id="fill-error" class="hidden text-sm text-red-400"></p>
+      </div>
+      <div id="fill-loading" class="hidden flex flex-col items-center justify-center py-8 gap-3">
+        <div class="w-10 h-10 border-4 border-slate-700 border-t-fuchsia-500 rounded-full animate-spin"></div>
+        <p class="text-sm text-slate-400">Analyzing receipt with Gemini...</p>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold text-slate-100">Items</h2>
+        <button
+          id="add-item-btn"
+          class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition text-sm"
+        >
+          + Add Item
+        </button>
+      </div>
+      <div id="item-list" class="flex flex-col gap-4"></div>
+      <p id="empty-items" class="text-center text-slate-500 py-6 text-sm">
+        No items yet. Click "Add Item" to start.
+      </p>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
+      <h2 class="text-lg font-semibold mb-3 text-slate-100">Charges</h2>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="text-sm">
+          <span class="text-slate-400">Service charge (%)</span>
+          <input id="service-input" type="number" min="0" step="0.01" value="0"
+            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </label>
+        <label class="text-sm">
+          <span class="text-slate-400">Tax (%)</span>
+          <input id="tax-input" type="number" min="0" step="0.01" value="0"
+            class="w-full px-2 py-1 mt-1 bg-slate-800 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </label>
+      </div>
+      <p class="text-xs text-slate-500 mt-2">Tax is applied on top of subtotal + service charge. Each person pays a proportional share based on their items.</p>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-4 sm:p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold text-slate-100">Summary</h2>
+        <button
+          id="share-btn"
+          class="px-3 py-1.5 bg-slate-700 text-slate-100 rounded-lg hover:bg-slate-600 transition text-sm flex items-center gap-1.5"
+        >
+          <span>🔗</span>
+          <span id="share-btn-label">Copy shareable link</span>
+        </button>
+      </div>
+      <div id="summary" class="space-y-2"></div>
+      <p id="empty-summary" class="text-center text-slate-500 py-6 text-sm">
+        Add people and items to see the breakdown.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      people: [],
+      items: [],
+      servicePct: 0,
+      taxPct: 0,
+      expanded: new Set(),
+      nextPersonId: 1,
+      nextItemId: 1,
+    };
+
+    const personListEl = document.getElementById('person-list');
+    const itemListEl = document.getElementById('item-list');
+    const summaryEl = document.getElementById('summary');
+    const emptyItemsEl = document.getElementById('empty-items');
+    const emptySummaryEl = document.getElementById('empty-summary');
+    const personForm = document.getElementById('person-form');
+    const personInput = document.getElementById('person-input');
+    const addItemBtn = document.getElementById('add-item-btn');
+    const serviceInput = document.getElementById('service-input');
+    const taxInput = document.getElementById('tax-input');
+    const shareBtn = document.getElementById('share-btn');
+    const shareBtnLabel = document.getElementById('share-btn-label');
+    const fillForm = document.getElementById('fill-form');
+    const fillLoading = document.getElementById('fill-loading');
+    const fillFile = document.getElementById('fill-file');
+    const fillKey = document.getElementById('fill-key');
+    const fillSubmit = document.getElementById('fill-submit');
+    const fillError = document.getElementById('fill-error');
+
+    const addPerson = (name) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      state.people.push({ id: state.nextPersonId++, name: trimmed });
+      render();
+    };
+
+    const removePerson = (id) => {
+      state.people = state.people.filter((p) => p.id !== id);
+      state.items.forEach((item) => {
+        item.sharers.delete(id);
+      });
+      state.expanded.delete(id);
+      render();
+    };
+
+    const addItem = () => {
+      state.items.push({
+        id: state.nextItemId++,
+        name: '',
+        quantity: 1,
+        price: 0,
+        sharers: new Set(),
+      });
+      render();
+    };
+
+    const removeItem = (id) => {
+      state.items = state.items.filter((i) => i.id !== id);
+      render();
+    };
+
+    const updateItem = (id, field, value) => {
+      const item = state.items.find((i) => i.id === id);
+      if (!item) return;
+      item[field] = value;
+      renderSummary();
+    };
+
+    const toggleSharer = (itemId, personId) => {
+      const item = state.items.find((i) => i.id === itemId);
+      if (!item) return;
+      if (item.sharers.has(personId)) {
+        item.sharers.delete(personId);
+      } else {
+        item.sharers.add(personId);
+      }
+      render();
+    };
+
+    const renderPeople = () => {
+      personListEl.innerHTML = '';
+      state.people.forEach((person) => {
+        const chip = document.createElement('div');
+        chip.className =
+          'flex items-center gap-2 bg-indigo-500/20 text-indigo-200 border border-indigo-500/40 px-3 py-1.5 rounded-full text-sm';
+        chip.innerHTML = `
+          <span>${escapeHtml(person.name)}</span>
+          <button class="text-indigo-300 hover:text-red-400 font-bold leading-none" aria-label="Remove ${escapeHtml(person.name)}">×</button>
+        `;
+        chip.querySelector('button').addEventListener('click', () => removePerson(person.id));
+        personListEl.appendChild(chip);
+      });
+    };
+
+    const renderItems = () => {
+      itemListEl.innerHTML = '';
+      emptyItemsEl.classList.toggle('hidden', state.items.length > 0);
+
+      state.items.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'border border-slate-700 rounded-lg p-4 space-y-3 bg-slate-800/60 w-full';
+
+        const sharerButtons = state.people
+          .map((person) => {
+            const active = item.sharers.has(person.id);
+            const cls = active
+              ? 'bg-indigo-600 text-white border-indigo-500'
+              : 'bg-slate-900 text-slate-300 border-slate-600 hover:border-indigo-400 hover:text-white';
+            return `<button data-person-id="${person.id}" class="px-3 py-1 text-sm rounded-full border transition ${cls}">${escapeHtml(person.name)}</button>`;
+          })
+          .join('');
+
+        card.innerHTML = `
+          <div class="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Item name"
+              value="${escapeHtml(item.name)}"
+              class="flex-1 px-2 py-1 bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              data-field="name"
+            />
+            <button class="text-red-400 hover:text-red-300 text-xl leading-none px-1" data-action="delete" aria-label="Delete item">×</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="text-sm">
+              <span class="text-slate-400">Qty</span>
+              <input type="number" min="0" step="1" value="${item.quantity}"
+                class="w-full px-2 py-1 bg-slate-900 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                data-field="quantity" />
+            </label>
+            <label class="text-sm">
+              <span class="text-slate-400">Price</span>
+              <input type="number" min="0" step="0.01" value="${item.price}"
+                class="w-full px-2 py-1 bg-slate-900 border border-slate-700 text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                data-field="price" />
+            </label>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 mb-1">Shared by</p>
+            <div class="flex flex-wrap gap-1.5" data-role="sharers">
+              ${sharerButtons || '<span class="text-xs text-slate-500">Add people first</span>'}
+            </div>
+          </div>
+          <div class="text-right text-sm text-slate-400">
+            Total: <span class="font-semibold text-emerald-400">$${(item.quantity * item.price).toFixed(2)}</span>
+          </div>
+        `;
+
+        card.querySelector('[data-action="delete"]').addEventListener('click', () => removeItem(item.id));
+
+        card.querySelector('input[data-field="name"]').addEventListener('input', (e) => {
+          updateItem(item.id, 'name', e.target.value);
+        });
+
+        card.querySelector('input[data-field="quantity"]').addEventListener('input', (e) => {
+          updateItem(item.id, 'quantity', Number(e.target.value) || 0);
+          updateItemTotal(card, item.id);
+        });
+
+        card.querySelector('input[data-field="price"]').addEventListener('input', (e) => {
+          updateItem(item.id, 'price', Number(e.target.value) || 0);
+          updateItemTotal(card, item.id);
+        });
+
+        card.querySelectorAll('[data-role="sharers"] button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const personId = Number(btn.dataset.personId);
+            toggleSharer(item.id, personId);
+          });
+        });
+
+        itemListEl.appendChild(card);
+      });
+    };
+
+    const updateItemTotal = (card, itemId) => {
+      const item = state.items.find((i) => i.id === itemId);
+      if (!item) return;
+      const totalEl = card.querySelector('.text-right span');
+      if (totalEl) totalEl.textContent = `$${(item.quantity * item.price).toFixed(2)}`;
+    };
+
+    const computeBreakdown = () => {
+      const perPerson = new Map(
+        state.people.map((p) => [p.id, { items: [], subtotal: 0 }])
+      );
+
+      state.items.forEach((item) => {
+        const total = item.quantity * item.price;
+        const sharerCount = item.sharers.size;
+        if (sharerCount === 0 || total === 0) return;
+        const share = total / sharerCount;
+        item.sharers.forEach((personId) => {
+          const entry = perPerson.get(personId);
+          if (!entry) return;
+          entry.items.push({
+            name: item.name || 'Unnamed item',
+            quantity: item.quantity,
+            price: item.price,
+            sharerCount,
+            share,
+          });
+          entry.subtotal += share;
+        });
+      });
+
+      const totalSubtotal = Array.from(perPerson.values()).reduce(
+        (sum, p) => sum + p.subtotal,
+        0
+      );
+
+      const servicePct = state.servicePct / 100;
+      const taxPct = state.taxPct / 100;
+
+      const result = new Map();
+      state.people.forEach((person) => {
+        const entry = perPerson.get(person.id);
+        const ratio = totalSubtotal > 0 ? entry.subtotal / totalSubtotal : 0;
+        const service = entry.subtotal * servicePct;
+        const tax = (entry.subtotal + service) * taxPct;
+        result.set(person.id, {
+          items: entry.items,
+          subtotal: entry.subtotal,
+          service,
+          tax,
+          total: entry.subtotal + service + tax,
+          ratio,
+        });
+      });
+      return result;
+    };
+
+    const renderSummary = () => {
+      const showEmpty = state.people.length === 0 || state.items.length === 0;
+      emptySummaryEl.classList.toggle('hidden', !showEmpty);
+      summaryEl.innerHTML = '';
+      if (showEmpty) return;
+
+      const breakdown = computeBreakdown();
+
+      state.people.forEach((person) => {
+        const data = breakdown.get(person.id);
+        const isOpen = state.expanded.has(person.id);
+
+        const row = document.createElement('div');
+        row.className = 'border-b border-slate-800 last:border-0';
+
+        const itemsHtml = data.items.length
+          ? data.items
+              .map(
+                (it) => `
+                <div class="flex justify-between text-xs py-1">
+                  <span class="text-slate-300">
+                    ${escapeHtml(it.name)}
+                    <span class="text-slate-500">(${it.quantity} × $${it.price.toFixed(2)} ÷ ${it.sharerCount})</span>
+                  </span>
+                  <span class="text-slate-200">$${it.share.toFixed(2)}</span>
+                </div>`
+              )
+              .join('')
+          : '<p class="text-xs text-slate-500 py-1">No items shared.</p>';
+
+        row.innerHTML = `
+          <button class="w-full flex justify-between items-center py-3 text-left hover:bg-slate-800/40 px-2 rounded transition" data-action="toggle">
+            <span class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs transition-transform inline-block ${isOpen ? 'rotate-90' : ''}">▶</span>
+              <span class="font-medium text-slate-200">${escapeHtml(person.name)}</span>
+            </span>
+            <span class="text-lg font-semibold text-emerald-400">$${data.total.toFixed(2)}</span>
+          </button>
+          <div class="${isOpen ? '' : 'hidden'} px-2 pb-3 space-y-2">
+            <div class="bg-slate-800/40 rounded p-3 space-y-1">
+              <p class="text-xs uppercase tracking-wide text-slate-500 mb-1">Items</p>
+              ${itemsHtml}
+              <div class="flex justify-between text-xs pt-2 mt-1 border-t border-slate-700">
+                <span class="text-slate-400">Subtotal (before tax & service)</span>
+                <span class="text-slate-200 font-medium">$${data.subtotal.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-400">Service charge (${state.servicePct || 0}%)</span>
+                <span class="text-slate-200">+ $${data.service.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-400">Tax (${state.taxPct || 0}%)</span>
+                <span class="text-slate-200">+ $${data.tax.toFixed(2)}</span>
+              </div>
+              <div class="flex justify-between text-sm pt-2 mt-1 border-t border-slate-700">
+                <span class="text-slate-300 font-medium">Final total</span>
+                <span class="text-emerald-400 font-semibold">$${data.total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        row.querySelector('[data-action="toggle"]').addEventListener('click', () => {
+          if (state.expanded.has(person.id)) {
+            state.expanded.delete(person.id);
+          } else {
+            state.expanded.add(person.id);
+          }
+          renderSummary();
+        });
+
+        summaryEl.appendChild(row);
+      });
+    };
+
+    const render = () => {
+      renderPeople();
+      renderItems();
+      renderSummary();
+    };
+
+    const escapeHtml = (str) =>
+      String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    personForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      addPerson(personInput.value);
+      personInput.value = '';
+      personInput.focus();
+    });
+
+    addItemBtn.addEventListener('click', addItem);
+
+    serviceInput.addEventListener('input', (e) => {
+      state.servicePct = Number(e.target.value) || 0;
+      renderSummary();
+    });
+
+    taxInput.addEventListener('input', (e) => {
+      state.taxPct = Number(e.target.value) || 0;
+      renderSummary();
+    });
+
+    const encodeState = () => {
+      const personIndex = new Map(state.people.map((p, i) => [p.id, i]));
+      const payload = {
+        v: 1,
+        p: state.people.map((p) => p.name),
+        i: state.items.map((it) => ({
+          n: it.name,
+          q: it.quantity,
+          pr: it.price,
+          s: Array.from(it.sharers)
+            .map((id) => personIndex.get(id))
+            .filter((idx) => idx !== undefined),
+        })),
+        sc: state.servicePct,
+        tx: state.taxPct,
+      };
+      const json = JSON.stringify(payload);
+      return btoa(unescape(encodeURIComponent(json)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    };
+
+    const decodeState = (encoded) => {
+      try {
+        const padded = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        const json = decodeURIComponent(escape(atob(padded)));
+        const data = JSON.parse(json);
+        if (!data || data.v !== 1) return false;
+
+        state.people = (data.p || []).map((name) => ({
+          id: state.nextPersonId++,
+          name: String(name),
+        }));
+
+        state.items = (data.i || []).map((it) => ({
+          id: state.nextItemId++,
+          name: String(it.n || ''),
+          quantity: Number(it.q) || 0,
+          price: Number(it.pr) || 0,
+          sharers: new Set(
+            (it.s || [])
+              .map((idx) => state.people[idx]?.id)
+              .filter((id) => id !== undefined)
+          ),
+        }));
+
+        state.servicePct = Number(data.sc) || 0;
+        state.taxPct = Number(data.tx) || 0;
+        serviceInput.value = state.servicePct;
+        taxInput.value = state.taxPct;
+        return true;
+      } catch (err) {
+        console.error('Failed to decode shared bill:', err);
+        return false;
+      }
+    };
+
+    const buildShareUrl = () => {
+      const url = new URL(window.location.href);
+      url.hash = `data=${encodeState()}`;
+      return url.toString();
+    };
+
+    shareBtn.addEventListener('click', async () => {
+      const url = buildShareUrl();
+      try {
+        await navigator.clipboard.writeText(url);
+        shareBtnLabel.textContent = 'Copied!';
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          shareBtnLabel.textContent = 'Copied!';
+        } catch {
+          shareBtnLabel.textContent = 'Copy failed';
+        }
+        document.body.removeChild(ta);
+      }
+      setTimeout(() => {
+        shareBtnLabel.textContent = 'Copy shareable link';
+      }, 2000);
+    });
+
+    const fileToBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result;
+          const comma = result.indexOf(',');
+          resolve(comma >= 0 ? result.slice(comma + 1) : result);
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+
+    const showFillError = (message) => {
+      fillError.textContent = message;
+      fillError.classList.remove('hidden');
+    };
+
+    const setFillLoading = (loading) => {
+      fillForm.classList.toggle('hidden', loading);
+      fillLoading.classList.toggle('hidden', !loading);
+    };
+
+    const extractWithGemini = async (file, apiKey) => {
+      const base64 = await fileToBase64(file);
+      const prompt = `You are a receipt parser. Analyze this receipt image and extract the data into JSON with this exact shape:
+{
+  "items": [{ "name": string, "quantity": number, "price": number }],
+  "servicePct": number,
+  "taxPct": number,
+  "people": [string]
+}
+
+Rules:
+- "price" is the per-unit price (not the line total).
+- If service charge or tax appear as absolute amounts on the receipt, convert them to percentages of the subtotal: (amount / subtotal) * 100. Round to 2 decimals.
+- If service charge or tax are not on the receipt, set them to 0.
+- "people" should only contain names if the receipt explicitly lists who shared what (rare). Otherwise return [].
+- Return ONLY the JSON object, no markdown fences or commentary.`;
+
+      const body = {
+        contents: [
+          {
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: file.type || 'image/jpeg', data: base64 } },
+            ],
+          },
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+        },
+      };
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Gemini API error (${res.status}): ${errText.slice(0, 200)}`);
+      }
+
+      const data = await res.json();
+      console.groupCollapsed('[Blitz] Gemini raw response');
+      console.log(data);
+      console.groupEnd();
+
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Empty response from Gemini.');
+      console.log('[Blitz] Gemini model text:', text);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        throw new Error('Could not parse Gemini response as JSON.');
+      }
+      console.log('[Blitz] Gemini parsed JSON:', parsed);
+      return parsed;
+    };
+
+    const applyExtracted = (data) => {
+      state.people = [];
+      state.items = [];
+      state.expanded = new Set();
+
+      (data.people || []).forEach((name) => {
+        const trimmed = String(name).trim();
+        if (trimmed) state.people.push({ id: state.nextPersonId++, name: trimmed });
+      });
+
+      (data.items || []).forEach((it) => {
+        state.items.push({
+          id: state.nextItemId++,
+          name: String(it.name || ''),
+          quantity: Number(it.quantity) || 0,
+          price: Number(it.price) || 0,
+          sharers: new Set(),
+        });
+      });
+
+      state.servicePct = Number(data.servicePct) || 0;
+      state.taxPct = Number(data.taxPct) || 0;
+      serviceInput.value = state.servicePct;
+      taxInput.value = state.taxPct;
+
+      render();
+    };
+
+    fillSubmit.addEventListener('click', async () => {
+      fillError.classList.add('hidden');
+      const file = fillFile.files?.[0];
+      const apiKey = fillKey.value.trim();
+
+      if (!file) {
+        showFillError('Please select an image of the receipt.');
+        return;
+      }
+      if (!apiKey) {
+        showFillError('Please enter your Gemini API key.');
+        return;
+      }
+
+      setFillLoading(true);
+      try {
+        const data = await extractWithGemini(file, apiKey);
+        applyExtracted(data);
+        setFillLoading(false);
+      } catch (err) {
+        setFillLoading(false);
+        showFillError(err.message || 'Something went wrong while processing the image.');
+      }
+    });
+
+    const loadFromUrl = () => {
+      const hash = window.location.hash.replace(/^#/, '');
+      const params = new URLSearchParams(hash);
+      const data = params.get('data');
+      return data ? decodeState(data) : false;
+    };
+
+    if (!loadFromUrl()) {
+      state.items.push({
+        id: state.nextItemId++,
+        name: '',
+        quantity: 1,
+        price: 0,
+        sharers: new Set(),
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
