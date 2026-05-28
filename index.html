@@ -662,6 +662,7 @@
         currencyReceiptInput.value = state.receiptCurrency;
         currencyAltInput.value = state.altCurrency;
         currencyRateInput.value = state.conversionRate || '';
+        updateCurrencyLabels();
         return true;
       } catch (err) {
         console.error('Failed to decode shared bill:', err);
